@@ -49,6 +49,17 @@ function findById(id, animalsArray) {
     return result;
 }
 
+function createNewAnimal(body, animalsArray) {
+    const animal = body;
+    animalsArray.push(animal);
+    fs.writeFileSync(path.join(_dirname, './data/animal.json'),JSON.stringify({ animals: animalsArray}, null, 2));
+    return animal;
+    //function's main code will go here: 
+
+    //return finished code to post route for response
+
+}
+
 function validateAnimal(animal) {
     if (!animal.name || typeof animal.name !== 'string') {
         return false;
@@ -65,6 +76,14 @@ function validateAnimal(animal) {
     return true;
 }
 
+app.get('/api/animals', (req, res) => {
+    let results = animals;
+    if (req.query) {
+        results = filterByQuery(req.query, results);
+    }
+    res.json(results);
+});
+
 app.get('/api/animals/:id', (req, res) => {
     const result = findById(req.params.id, animals);
     if (result) {
@@ -74,24 +93,7 @@ app.get('/api/animals/:id', (req, res) => {
     }
 });
 
-function createNewAnimal(body, animalsArray) {
-    const animal = body;
-    animalsArray.push(animal);
-    fs.writeFileSync(path.join(_dirname, './data/animal.json'),JSON.stringify({ animals: animalsArray}, null, 2));
-    return animal;
-    //function's main code will go here: 
 
-    //return finished code to post route for response
-
-}
-
-app.get('/api/animals', (req, res) => {
-    let results = animals;
-    if (req.query) {
-        results = filterByQuery(req.query, results);
-    }
-    res.json(results);
-});
 
 app.post('/api/animals', (req, res) => {
     //set id on what the next index of the array will be
@@ -109,6 +111,10 @@ app.post('/api/animals', (req, res) => {
     // const animal = createNewAnimal(req.body. animals);
 
     // res.json(animal);
+});
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(_dirname, '/public/index.html'));
 });
 
 app.listen(PORT, () => {
